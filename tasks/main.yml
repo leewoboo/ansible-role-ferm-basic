@@ -1,0 +1,26 @@
+---
+- name: install ferm
+  apt:
+    name=ferm
+    state=latest
+    install_recommends=no
+  sudo: true
+  when: usetor is not defined or not usetor
+
+- name: Install ferm (usewithtor)
+  sudo: true
+  shell: usewithtor apt-get install ferm --no-install-recommends -q -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+  environment: 
+    DEBIAN_FRONTEND: noninteractive
+  when: usetor is defined and usetor
+  tags:
+    - installferm
+
+
+- name: ensure ferm will start on boot
+  sudo: true
+  lineinfile:
+    state=present
+    dest=/etc/default/ferm
+    regexp="^ENABLED"
+    line='ENABLED="yes"'
